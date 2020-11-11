@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Rust+ Web Controller</title>
+    <link href="/styles.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <div id="container">
+      <div id="header__container" class="container--narrow-width">
+        <h1 id="title-text__header">Rust+ Web Controller</h1>
+        <h2 id="server-info__header">Current server: N/A</h2>
+      </div>
+      <div id="device-creation__container" class="container--narrow-width">
+        <h3 id="title__device-creation">To add an interactive device please enter the device ID and give it a nickname.</h3>
+        <div id="device-detail-holder__device-creation">
+          <input type="number" placeholder="Enter a device ID" id="device-id__device-detail-holder">
+          <input type="text" placeholder="Enter a nickname" id="device-name__device-detail-holder">
+        </div>
+        <button id="add-device-btn__device-creation" type="button">Add a device</button>
+      </div>
+      <div id="device-holder__container" class="container--narrow-width">
+
+      </div>
+      <div id="configuration__container" class="container--narrow-width">
+        <button id="notification-btn__configuration" type="button">Notification options</button>
+        <div id="notification-overlay__notification-btn">
+          <div id="notification-container__notification-overlay" class="setting--narrow-width">
+            <h2 id="title__notification-container">Here you can edit the notification options for your smart alarms</h3>
+            <div id="gpio-pin-container__notification-container">
+              <label id="label__gpio-pin-container">Select a GPIO pin to use for a buzzer</label>
+              <select id="select__gpio-pin-container">
+                  <option value="1">GPIO pin 1</option>
+                  <option value="2">GPIO pin 2</option>
+                  <option value="3">GPIO pin 3</option>
+                  <option value="4">GPIO pin 4</option>
+                  <option value="5">GPIO pin 5</option>
+                  <option value="6">GPIO pin 6</option>
+              </select>
+            </div>
+            <input id="discord-webhook-link__notification-container" type="text" placeholder="Enter your discord web hook URL">
+            <input id="discord-message__notification-container" type="text" placeholder="Enter your message to be sent to the webhook">
+            <button id="save__notification-container" type="button">Save</button>
+          </div>
+        </div>
+        <button id="server-settings-btn__configuration" type="button">Server settings</button>
+        <div id="server-settings-overlay__server-settings-btn" class="">
+          <div id="server-settings-container__notification-overlay" class="setting--narrow-width">
+            <h2 id="title__server-settings-container">Edit server settings and user details. See <a href="https://github.com/nerif-tafu">github repo</a> for more information.</h3>
+            <input id="hostname__server-settings-container" type="text" placeholder="Enter your server hostname">
+            <input id="server-port__server-settings-container" type="number" placeholder="Enter your server port">
+            <input id="steamid__server-settings-container" type="number" placeholder="Enter your steam ID">
+            <input id="player-token__server-settings-container" type="number" placeholder="Enter your player token">
+            <button id="save__server-settings-container" type="button">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="/rustplussocket.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</html>
+
+<template id="smart-alarm-template">
+  <div class="device__device-holder">
+    <div class="device-primitives__device">
+      <img class="image-img__device-primitives device-primitives" src="/media/smartalarm.png"></img>
+      <input class="name-txt__device-primitives device-primitives" type="text" value="DEVICE NAME"></input>
+      <button class="state-btn__device-primitives device-primitives device--inactive" type="button">Inactive</button>
+      <button class="remove-btn__device-primitives device-primitives" type="button">Remove</button>
+    </div>
+    <div class="notification-options__device">
+      <button class="discord-notification-btn__notification-options device--inactive" type="button">Discord message notifications: OFF</button>
+      <button class="buzzer-notification-btn__notification-options device--inactive" type="button">Buzzer notifications: OFF</button>
+    </div>
+  </div>
+</template>
+
+<template id="smart-switch-template">
+  <div class="device__device-holder">
+    <div class="device-primitives__device">
+      <img class="image-img__device-primitives device-primitives" src="/media/smartswitch.png"></img>
+      <input class="name-txt__device-primitives device-primitives" type="text" value="DEVICE NAME"></input>
+      <button class="state-btn__device-primitives device-primitives device--inactive" type="button">Inactive</button>
+      <button class="remove-btn__device-primitives device-primitives" type="button">Remove</button>
+    </div>
+  </div>
+</template>

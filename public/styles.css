@@ -1,0 +1,382 @@
+:root {
+	--small-width: 300px;
+	--medium-width: 570px;
+	--large-width: 1010px;
+}
+
+@media (prefers-color-scheme:light) {
+	:root {
+		--main-bg-colour: #23303B;
+	}
+}
+
+@media (prefers-color-scheme:dark) {
+	:root {
+		--accept-bg-colour: #DAE8FC;
+    --accept-border-colour: #6C8EBF;
+    --active-bg-colour: #D5E8D4;
+    --active-border-colour: #82B366;
+    --inactive-bg-colour: #F8CECC;
+    --inactive-border-colour: #B85450;
+    --no-response-bg-colour: #FFF2CC;
+    --no-response-border-colour: #D6B656;
+    --remove-bg-colour: #FF3333;
+    --remove-border-colour: #B85450;
+    --remove-text-colour: #FFFFFF;
+
+    --foreground-bg-colour: #FFFFFF;
+    --foreground-border-colour: #000000;
+	}
+}
+
+.--error-highlight{
+  border-color: red;
+}
+
+#container,
+body,
+html {
+	min-height: 100%;
+	height: 100%;
+  margin: 0;
+}
+
+* {
+  font-family: helvetica;
+}
+
+button {
+  border: 1px solid black;
+}
+
+/* CONTAINER SECTION */
+
+#container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center
+}
+
+.container--narrow-width{
+
+}
+
+.setting--narrow-width{
+  border: 1px solid grey;
+}
+
+@media (min-width:1080px) {
+	.container--narrow-width {
+		max-width: var(--large-width);
+		min-width: var(--large-width);
+	}
+  .setting--narrow-width {
+		max-width: calc(var(--large-width) - 60px);
+		min-width: calc(var(--large-width) - 60px);
+	}
+}
+
+@media (max-width:1079px) and (min-width:640px) {
+	.container--narrow-width {
+		max-width: var(--medium-width);
+		min-width: var(--medium-width);
+	}
+  .setting--narrow-width {
+		max-width: calc(var(--medium-width) - 60px);
+		min-width: calc(var(--medium-width) - 60px);
+	}
+}
+
+@media (max-width:640px) {
+	.container--narrow-width {
+		max-width: var(--small-width);
+		min-width: var(--small-width);
+  }
+  .setting--narrow-width {
+    max-width: calc(var(--small-width) - 60px);
+    min-width: calc(var(--small-width) - 60px);
+  }
+}
+
+/* HEADER SECTION */
+
+#header__container {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#title-text__header,
+#server-info__header {
+  margin: 0;
+  text-align: center;
+  flex: 0;
+}
+
+#server-info__header {
+  font-weight: normal;
+}
+
+/* DEVICE CREATION SECTION */
+
+#device-creation__container {
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+#title__device-creation {
+  text-align: center;
+  font-weight: normal;
+  margin-top: 15px;
+  margin-bottom: 5px;
+}
+
+#device-detail-holder__device-creation {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+#add-device-btn__device-creation{
+  flex:0.8;
+  margin: 0px 0px 15px 0px;
+  padding: 5px;
+  background-color: var(--accept-bg-colour);
+  border-color: var(--accept-border-colour);
+}
+
+#device-id__device-detail-holder {
+  flex:2;
+  min-width: 10%;
+  padding: 10px;
+  margin: 10px 5px 10px 0px;
+}
+#device-name__device-detail-holder {
+  flex:2;
+  min-width: 10%;
+  padding: 10px;
+  margin: 10px 0px 10px 5px;
+}
+
+/* DEVICE HOLDER SECTION */
+
+#device-holder__container {
+  flex: 12;
+  overflow-y: auto;
+  min-height: 100px;
+}
+
+.device__device-holder {
+  border: 1px solid black;
+  min-height: 60px;
+  max-height: 140px;
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #F5F5F5;
+  border-color: #666666;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.device-primitives__device {
+  min-height: 60px;
+  max-height: 60px;
+  display: flex;
+}
+
+.notification-options__device{
+  margin-top: 5px;
+  min-height: 60px;
+  max-height: 80px;
+  display: flex;
+  flex-direction: column;
+}
+
+.discord-notification-btn__notification-options,
+.buzzer-notification-btn__notification-options {
+  flex: 1;
+  margin-top: 5px;
+  padding: 5px;
+}
+
+.image-img__device-primitives {
+
+}
+
+.name-txt__device-primitives {
+  flex: 8;
+  padding: 10px;
+  margin-left: 5px;
+  min-width: 50px;
+}
+
+.state-btn__device-primitives {
+  flex: 4;
+  margin-left: 5px;
+}
+
+.remove-btn__device-primitives {
+  flex: 2;
+  margin-left: 5px;
+  background-color: var(--remove-bg-colour);
+  border-color: var(--remove-border-colour);
+  color: var(--remove-text-colour);
+}
+
+.device--active {
+  background-color: var(--active-bg-colour);
+  border-color: var(--active-border-colour);
+}
+
+.device--inactive {
+  background-color: var(--inactive-bg-colour);
+  border-color: var(--inactive-border-colour);
+}
+
+.device--no-response {
+  background-color: var(--no-response-bg-colour);
+  border-color: var(--no-response-border-colour);
+}
+
+/* CONFIGURATION SECTION */
+
+#configuration__container {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  margin: 10px 0px 10px 0px;
+}
+
+#notification-btn__configuration {
+  flex: 1;
+  margin: 10px 5px 10px 0px;
+}
+#server-settings-btn__configuration {
+  flex: 1;
+  margin: 10px 0px 10px 5px;
+}
+
+#notification-overlay__notification-btn,
+#server-settings-overlay__server-settings-btn {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+#server-settings-container__notification-overlay,
+#notification-container__notification-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--foreground-bg-colour);
+  border-color: var(--foreground-border-colour);
+  padding:10px;
+}
+
+/* SERVER SETTINGS */
+
+#title__server-settings-container,
+#hostname__server-settings-container,
+#server-port__server-settings-container,
+#steamid__server-settings-container,
+#player-token__server-settings-container,
+#save__server-settings-container {
+  flex: 1;
+  margin: 5px;
+}
+
+#title__server-settings-container {
+  text-align: center;
+  text-decoration: underline;
+  flex: 1;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-weight: normal;
+}
+
+#hostname__server-settings-container,
+#server-port__server-settings-container,
+#steamid__server-settings-container,
+#player-token__server-settings-container {
+  padding: 5px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+#save__server-settings-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 5px;
+  background-color: var(--accept-bg-colour);
+  border-color: var(--accept-border-colour);
+}
+
+/* NOTIFICATION SETTINGS */
+
+#title__notification-container {
+  text-align: center;
+  text-decoration: underline;
+  flex: 1;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-weight: normal;
+}
+
+#gpio-pin-container__notification-container,
+#discord-webhook-link__notification-container,
+#discord-message__notification-container,
+#save__notification-container {
+  flex: 1;
+  margin: 5px;
+}
+
+#gpio-pin-container__notification-container {
+  display: flex;
+  flex-direction: row;
+}
+
+#label__gpio-pin-container,
+#select__gpio-pin-container {
+  padding: 5px;
+}
+
+#label__gpio-pin-container{
+  flex: 2;
+}
+
+#select__gpio-pin-container{
+    flex: 5;
+    border-width: 1px;
+    border-style: solid;
+}
+
+#discord-webhook-link__notification-container,
+#discord-message__notification-container {
+  padding: 5px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+#save__notification-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 5px;
+  background-color: var(--accept-bg-colour);
+  border-color: var(--accept-border-colour);
+}

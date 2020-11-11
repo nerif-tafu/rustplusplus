@@ -1,0 +1,7 @@
+.env
+db.json
+node_modules
+examples
+rustplus-api-master
+package-lock.json
+.eslintrc.yml

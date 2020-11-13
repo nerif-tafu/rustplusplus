@@ -8,11 +8,6 @@
   },
   "author": "Tafu",
   "license": "MIT",
-  "devDependencies": {
-    "eslint": "^7.12.1",
-    "eslint-config-portsoc": "^0.6.0",
-    "nodemon": "^2.0.6"
-  },
   "dependencies": {
     "discord-webhook-node": "^1.1.8",
     "dotenv": "^8.2.0",

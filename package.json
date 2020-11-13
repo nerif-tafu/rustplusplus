@@ -1,7 +1,7 @@
 {
-  "name": "rustplus",
+  "name": "rustplusplus",
   "version": "1.0.0",
-  "description": "Rust+ interface for RPI",
+  "description": "Rust+ web interface for RPI",
   "main": "server.js",
   "repository": {
     "type": "git",
@@ -9,11 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nerif-tafu/rustplusplus.git"
-  },
+  }
   "author": "Tafu",
   "license": "MIT",
   "dependencies": {
@@ -21,7 +17,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "lowdb": "^1.0.0",
-    "rustplus-api": "github:nerif-tafu/rustplus-api",
+    "rustplus-api": "https://github.com/nerif-tafu/rustplus-api",
     "socket.io": "^3.0.0"
   }
 }

@@ -40,7 +40,7 @@ $ sudo cp -R * /usr/local/
 
 $ sudo npm install npm@latest -g
 
-$ sudo git clone https://github.com/nerif-tafu/rustplusplus /home/pi/rustplusplus
+$ git clone https://github.com/nerif-tafu/rustplusplus /home/pi/rustplusplus
 $ cd /home/pi/rustplusplus
 
 $ npm install  

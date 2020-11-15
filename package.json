@@ -13,11 +13,14 @@
   "author": "Tafu",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.21.0",
     "discord-webhook-node": "^1.1.8",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "lowdb": "^1.0.0",
     "rustplus-api": "github:liamcottle/rustplus-api",
-    "socket.io": "^3.0.0"
+    "socket.io": "^3.0.0",
+    "uuid": "^8.1.0",
+    "push-receiver": "^2.1.0"
   }
 }

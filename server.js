@@ -5,6 +5,9 @@ const express = require('express');
 const socket = require('socket.io');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
+const axios = require('axios');
+const { v4: uuidv4 } = require('uuid');
+const { register, listen } = require('push-receiver');
 
 let currentlyConnected = false;
 let rustplus;
@@ -30,10 +33,13 @@ const server = app.listen(80, function(){
 });
 app.use(express.static('public'));
 
+app.use(express.static('public', {
+    extensions: 'html'
+}));
+
 
 const io = socket(server);
 io.on('connection', (socket) => {
-
     if (currentlyConnected) {
       db.get('devices').value().forEach(smartDevice => {
         socket.emit('server_UpdateDevice', smartDevice);
@@ -164,7 +170,89 @@ io.on('connection', (socket) => {
 
       io.sockets.emit('server_UpdateServerSettings', {"hostname": db.get('severSettingsHostname').value(), "connectionState": currentlyConnected});
   });
+
+  // Stuff for pair.js
+
+  socket.on('pair_client_connect', function(data){ // NEED TO FINISH.
+    pairClientConnect({'socketID': socket.id, 'connectedFrom': data.connectedFrom});
+  });
+
+  socket.on('pair_server_disconnect', function(data) {
+    shutdown(data.steamAuthToken, data.expoPushToken);
+  });
 });
+
+async function pairClientConnect(data) {
+  const credentials = await register('976529667804');
+  axios.post('https://exp.host/--/api/v2/push/getExpoPushToken', {
+      deviceId: uuidv4(),
+      experienceId: '@facepunch/RustCompanion',
+      appId: 'com.facepunch.rust.companion',
+      deviceToken: credentials.fcm.token,
+      type: 'fcm',
+      development: false,
+  }).then(async (response) => {
+
+      expoPushToken = response.data.data.expoPushToken;
+
+      app.get(`/pair/${data.socketID}`, (req, res) => {
+
+        steamAuthToken = req.query.token;
+
+        io.to(data.socketID).emit('pair_server_deleteOnLeave',{'steamAuthToken': steamAuthToken, 'expoPushToken': expoPushToken});
+
+        axios.post('https://companion-rust.facepunch.com:443/api/push/register', {
+            AuthToken: steamAuthToken,
+            DeviceId: 'rustplus-api',
+            PushKind: 0,
+            PushToken: expoPushToken,
+        }).then((response) => {
+            io.to(data.socketID).emit('pair_server_synced',{});
+            waitForRustPlusInfo(credentials, data.socketID);
+        }).catch((error) => {
+            console.log("Failed to register with Rust Companion API");
+            console.log(error);
+        });
+
+        res.sendFile('public/success.html', {root: __dirname })
+      });
+      const url = "https://companion-rust.facepunch.com/login?returnUrl=" + encodeURIComponent(`${data.connectedFrom}/${data.socketID}?expoPushToken=expoPushToken`);
+      io.to(data.socketID).emit('pair_server_popup', { 'url': url });
+
+  }).catch((error) => {
+      console.log("Failed to fetch Expo Push Token");
+      console.log(error);
+  });
+}
+
+async function waitForRustPlusInfo(credentials, socketID){
+  await listen(credentials, ({ notification, persistentId }) => {
+      const body = JSON.parse(notification.data.body);
+
+      if (body.type === 'server') {
+        io.to(socketID).emit('pair_server_rustplusinfo', { 'type': body.type,'ip': body.ip, 'port': body.port, 'playerToken': body.playerToken, 'steamID': body.playerId});
+      } else {
+        io.to(socketID).emit('pair_server_rustplusinfo', { 'type': body.type, 'deviceID': body.entityId, 'deviceType': body.entityName});
+      }
+  });
+}
+
+async function shutdown(steamAuthToken, expoPushToken) {
+    // unregister with Rust Companion API
+    if(steamAuthToken){
+        await axios.delete('https://companion-rust.facepunch.com:443/api/push/unregister', {
+            data: {
+                AuthToken: steamAuthToken,
+                PushToken: expoPushToken,
+                DeviceId: 'rustplus-api',
+            },
+        }).then((response) => {
+
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+}
 
 function connectToRustPlus(){
   const hostname = db.get('severSettingsHostname').value();

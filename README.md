@@ -44,7 +44,7 @@ $ git clone https://github.com/nerif-tafu/rustplusplus /home/pi/rustplusplus
 $ cd /home/pi/rustplusplus
 
 $ npm install  
-$ npm start
+$ sudo npm start
 ```
 
 Go to your favorite web browser and navigate to http://serveripaddress to see your Rust plus+

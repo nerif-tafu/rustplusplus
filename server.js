@@ -5,7 +5,9 @@ const express = require('express');
 const socket = require('socket.io');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
+const Gpio = require('onoff').Gpio;
 
+let buzzerPin;
 let rustplus;
 const adapter = new FileSync('db.json');
 const db = low(adapter);
@@ -30,6 +32,9 @@ const server = app.listen(80, function(){
 });
 app.use(express.static('public'));
 
+if (db.get('notificationSettingsGPIOPin').value() !== '') {
+  buzzerPin = new Gpio(parseInt(db.get('notificationSettingsGPIOPin').value()), 'out');
+}
 
 const io = socket(server);
 io.on('connection', (socket) => {
@@ -147,6 +152,8 @@ io.on('connection', (socket) => {
       db.set('notificationSettingsDiscordURL', data.discordWebhookLink).write();
       db.set('notificationSettingsDiscordMessage', data.discordMessage).write();
 
+      buzzerPin = new Gpio(parseInt(db.get('notificationSettingsGPIOPin').value()), 'out');
+
       io.sockets.emit('server_UpdateNotificationSettings', {
         "GPIOPin": db.get('notificationSettingsGPIOPin').value(),
         "discordWebhookLink": db.get('notificationSettingsDiscordURL').value(),
@@ -215,10 +222,17 @@ rustplus.on('message', (message) => {
       }
 
       if (db.get('devices').find({ deviceID: entityChanged.entityId }).value().notificationBuzzer) {
-
+        if (db.get('notificationSettingsGPIOPin').value() === '') { return; }
+        runBuzzer();
       }
     }
-
-
-
 });
+
+async function runBuzzer() {
+  for(let i = 0; i < 4; i++) {
+    buzzer.writeSync(1)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    buzzer.writeSync(0);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+}

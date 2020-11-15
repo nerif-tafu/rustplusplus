@@ -230,9 +230,9 @@ rustplus.on('message', (message) => {
 
 async function runBuzzer() {
   for(let i = 0; i < 4; i++) {
-    buzzer.writeSync(1)
+    buzzerPin.writeSync(1);
     await new Promise(resolve => setTimeout(resolve, 1000));
-    buzzer.writeSync(0);
+    buzzerPin.writeSync(0);
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
 }

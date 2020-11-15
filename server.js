@@ -6,6 +6,7 @@ const socket = require('socket.io');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 
+let currentlyConnected = false;
 let rustplus;
 const adapter = new FileSync('db.json');
 const db = low(adapter);
@@ -15,7 +16,6 @@ db.defaults({
   severSettingsRustPlusPort: 0,
   severSettingsSteamID: "",
   serverSettingsPlayerToken: 0,
-  notificationSettingsGPIOPin: "",
   notificationSettingsDiscordURL: "",
   notificationSettingsDiscordMessage: "",
   devices: []
@@ -33,16 +33,18 @@ app.use(express.static('public'));
 
 const io = socket(server);
 io.on('connection', (socket) => {
-    db.get('devices').value().forEach(smartDevice => {
-      socket.emit('server_UpdateDevice', smartDevice);
-      rustplus.getEntityInfo(smartDevice.deviceID, (message) => {
-        return true;
-      });
-    });
 
-    socket.emit('server_UpdateServerSettings', {"hostname": db.get('severSettingsHostname').value()});
+    if (currentlyConnected) {
+      db.get('devices').value().forEach(smartDevice => {
+        socket.emit('server_UpdateDevice', smartDevice);
+        rustplus.getEntityInfo(smartDevice.deviceID, (message) => {
+          return true;
+        });
+      });
+    }
+
+    socket.emit('server_UpdateServerSettings', {"hostname": db.get('severSettingsHostname').value(), "connectionState": currentlyConnected});
     socket.emit('server_UpdateNotificationSettings', {
-      "GPIOPin": db.get('notificationSettingsGPIOPin').value(),
       "discordWebhookLink": db.get('notificationSettingsDiscordURL').value(),
       "discordMessage": db.get('notificationSettingsDiscordMessage').value()}
     );
@@ -143,12 +145,10 @@ io.on('connection', (socket) => {
     });
 
     socket.on('client_UpdateNotificationSettings', function(data){
-      db.set('notificationSettingsGPIOPin', data.GPIOPin).write();
       db.set('notificationSettingsDiscordURL', data.discordWebhookLink).write();
       db.set('notificationSettingsDiscordMessage', data.discordMessage).write();
 
       io.sockets.emit('server_UpdateNotificationSettings', {
-        "GPIOPin": db.get('notificationSettingsGPIOPin').value(),
         "discordWebhookLink": db.get('notificationSettingsDiscordURL').value(),
         "discordMessage": db.get('notificationSettingsDiscordMessage').value()}
       );
@@ -159,9 +159,10 @@ io.on('connection', (socket) => {
       db.set('severSettingsRustPlusPort', data.rustPlusPort).write();
       db.set('severSettingsSteamID', data.steamID).write();
       db.set('serverSettingsPlayerToken', data.playerToken).write();
+
       connectToRustPlus();
 
-      io.sockets.emit('server_UpdateServerSettings', {"hostname": db.get('severSettingsHostname').value()});
+      io.sockets.emit('server_UpdateServerSettings', {"hostname": db.get('severSettingsHostname').value(), "connectionState": currentlyConnected});
   });
 });
 
@@ -172,9 +173,21 @@ function connectToRustPlus(){
   const playerToken = db.get('serverSettingsPlayerToken').value();
 
   rustplus = new RustPlus(hostname, rustPlusPort, steamID, playerToken);
-}
 
-rustplus.on('connected', () => { // Only here temporarily.
+
+rustplus.on('error', e => {
+  currentlyConnected = false;
+  io.sockets.emit('server_UpdateServerSettings', {"hostname": db.get('severSettingsHostname').value(), "connectionState": currentlyConnected});
+
+  db.get('devices').value().forEach(smartDevice => {
+    smartDevice.deviceState = 'No Response';
+    io.sockets.emit('server_UpdateDevice', smartDevice);
+  });
+});
+
+rustplus.on('connected', () => {
+    currentlyConnected = true;
+    io.sockets.emit('server_UpdateServerSettings', {"hostname": db.get('severSettingsHostname').value(), "connectionState": currentlyConnected});
     rustplus.sendTeamMessage(`Hello! Server initialised at ${new Date()}`);
 
     db.get('devices').value().forEach(smartDevice => {
@@ -190,6 +203,7 @@ rustplus.on('connected', () => { // Only here temporarily.
             .assign({ deviceState: message.response.entityInfo.payload.value ? 'Active': 'Inactive'})
             .write()
         }
+        io.sockets.emit('server_UpdateDevice', smartDevice);
         return true;
       });
     });
@@ -204,8 +218,8 @@ rustplus.on('message', (message) => {
         .write();
       io.emit('server_UpdateDevice',db.get('devices').find({ deviceID: entityChanged.entityId }).value());
 
-
       if (db.get('devices').find({ deviceID: entityChanged.entityId }).value().deviceState === 'Inactive') { return; }
+
       if (db.get('devices').find({ deviceID: entityChanged.entityId }).value().notificationDiscord ) {
         const hook = new Webhook(db.get('notificationSettingsDiscordURL').value());
         const IMAGE_URL = 'https://static.wikia.nocookie.net/play-rust/images/0/06/Rocket_Launcher_icon.png';
@@ -213,12 +227,6 @@ rustplus.on('message', (message) => {
         hook.setUsername('RUST+ ALERT');
         hook.send(`${db.get('devices').find({ deviceID: entityChanged.entityId }).value().deviceName.toUpperCase()} : ${db.get('notificationSettingsDiscordMessage').value()}`);
       }
-
-      if (db.get('devices').find({ deviceID: entityChanged.entityId }).value().notificationBuzzer) {
-
-      }
     }
-
-
-
 });
+}

@@ -192,8 +192,8 @@ button {
 
 .notification-options__device{
   margin-top: 5px;
-  min-height: 60px;
-  max-height: 80px;
+  min-height: 40px;
+  max-height: 40px;
   display: flex;
   flex-direction: column;
 }

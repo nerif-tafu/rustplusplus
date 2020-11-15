@@ -17,14 +17,9 @@ function startWebSocket() {
       if (data.deviceType === 'smartAlarm') {
         clone = smartAlarmTemplate.content.cloneNode(true);
         const discordNotificationBtn = clone.querySelector('.discord-notification-btn__notification-options');
-        const buzzerNotificationBtn = clone.querySelector('.buzzer-notification-btn__notification-options');
 
         discordNotificationBtn.addEventListener('click', () => {
           socket.emit('client_UpdateDevice', { updateType : 'discordNotificationState', state: discordNotificationBtn.stateValue, deviceID: data.deviceID });
-        });
-
-        buzzerNotificationBtn.addEventListener('click', () => {
-          socket.emit('client_UpdateDevice', { updateType : 'buzzerNotificationState', state: buzzerNotificationBtn.stateValue, deviceID: data.deviceID });
         });
 
       }
@@ -53,19 +48,13 @@ function startWebSocket() {
 
     if (data.deviceType === 'smartAlarm'){
       const discordNotificationButton = clone.querySelector('.discord-notification-btn__notification-options');
-      const buzzerNotificationButton = clone.querySelector('.buzzer-notification-btn__notification-options');
 
-      [discordNotificationButton, buzzerNotificationButton].forEach(button => {
-        button.classList.remove('device--active');
-        button.classList.remove('device--inactive');
-      });
+      discordNotificationButton.classList.remove('device--active');
+      discordNotificationButton.classList.remove('device--inactive');
 
       discordNotificationButton.classList.add(data.notificationDiscord ? 'device--active' : 'device--inactive');
       discordNotificationButton.stateValue = data.notificationDiscord;
       discordNotificationButton.innerHTML = data.notificationDiscord ? 'Discord message notifications: ON' : 'Discord message notifications: OFF';
-      buzzerNotificationButton.classList.add(data.notificationBuzzer ? 'device--active' : 'device--inactive');
-      buzzerNotificationButton.stateValue = data.notificationBuzzer;
-      buzzerNotificationButton.innerHTML = data.notificationBuzzer ? 'Buzzer notifications: ON' : 'Buzzer notifications: OFF';
     }
 
     clone.querySelector('.name-txt__device-primitives').value = data.deviceName;
@@ -87,14 +76,13 @@ function startWebSocket() {
   });
 
   socket.on('server_UpdateNotificationSettings', function(data){ // Recieved when a notification setting has been updated and needs to be rerendered.
-    gpioSelect.value = data.GPIOPin;
     discordWebhookLinkTextbox.value = data.discordWebhookLink;
     discordMessageTextbox.value = data.discordMessage;
   });
 
   socket.on('server_UpdateServerSettings', function(data){ // Recieved when a notification setting has been updated and needs to be rerendered.
     if (data.hostname === '') { data.hostname = 'N/A' }
-    serverInfoHeader.innerHTML = `Current server: ${data.hostname}`;
+    serverInfoHeader.innerHTML = `Current server: ${data.hostname} (${data.connectionState ? 'Connected' : 'Disconnected'})`;
   });
 
   socket.on('server_ErrorDevice', function(data){ // Recieved when a device ID does not exist or already added.
@@ -107,7 +95,7 @@ function startWebSocket() {
 }
 
 let serverSettingsOverlayBtn, notificationOverlayBtn, serverSettingsOverlay, notificationOverlay, serverSettingsSaveButton,
-    notificationSaveButton, hostnameTextbox, serverPortTextbox, steamIDTextbox, playerTokenTextbox, gpioSelect, discordWebhookLinkTextbox,
+    notificationSaveButton, hostnameTextbox, serverPortTextbox, steamIDTextbox, playerTokenTextbox, discordWebhookLinkTextbox,
     discordMessageTextbox, serverInfoHeader, deviceHolder, addDeviceBtn, deviceIDtxt, deviceNametxt;
 
 function initVariables() {
@@ -127,7 +115,6 @@ function initVariables() {
 
   discordWebhookLinkTextbox = document.querySelector('#discord-webhook-link__notification-container');
   discordMessageTextbox = document.querySelector('#discord-message__notification-container');
-  gpioSelect = document.querySelector('#select__gpio-pin-container');
 
   serverInfoHeader = document.querySelector('#server-info__header');
 
@@ -197,7 +184,6 @@ function initEventHandlers() {
       alert("Error! Please fill in all the textboxes")
     } else {
       let dataToSend = {
-        "GPIOPin": gpioSelect.value,
         "discordWebhookLink": discordWebhookLinkTextbox.value,
         "discordMessage": discordMessageTextbox.value
       };

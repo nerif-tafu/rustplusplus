@@ -38,7 +38,7 @@ npm start
 Navigate to the IP address of the machine you are hosting in a web browser.
 
 ### Raspberry Pi Guide
-This installation guide will be taking the assumption that you are using a Raspberry Pi as the host.
+This installation guide will be taking the assumption that you are using a Raspberry Pi as the host. I used a version 1 model b for my tests.
 
 #### Step 1:
 Install NOOBS onto your raspberry Pi from the [Raspberry Pi website](https://www.raspberrypi.org/downloads/). You will need to have your RPI's networking configured before you continue.
@@ -78,8 +78,10 @@ Another way to get device ID's from within the game is to use the command debug.
 
 To get Discord notifications setup you must first create a web hook from within your Discord server. Navigating to Server settings > Integrations > Web hooks > New Web hook > Copy Web hook URL will get your new web hook URL. Once you have the URL you can add the web hook URL to the "Notification settings" from your Rust Plus+ website. If you would like to mention a discord role you will need to get the role ID, you can get this by enabling developer settings from within Discord and then right clicking on the role from within Server Settings > Roles. To get the web hook to tag the role you must wrap the role ID with "<@ROLEID>". More info on this can be found [Here] (https://discordjs.guide/miscellaneous/parsing-mention-arguments.html)
 
+### Buzzer notifications
+To physically setup the buzzer for your Raspberry Pi you will need a module similar [to this]. Most piezoelectric buzzers are 5v compared to the output of a GPIO pin which is 3.3v, you need to watch out for this if you are trying to use a regular PC motherboard buzzer. If you are using that module you need to connect VCC to the Raspberry Pi's 5v pin, GND to the ground pin and I/O to the GPIO pin you want to use (I used 22 on the RaspbPi v1 b).
 
-
+[to this]: <https://www.ebay.co.uk/itm/Active-Buzzer-Module-3-3V-5V-Arduino-AVR-Raspberry/202706284693?_trkparms=aid>
 [liamcottle]: <https://github.com/liamcottle/rustplus-api>
 [liamcottle's lovely guide]: <https://github.com/liamcottle/rustplus-api#pairing>
 [nodeJS]: <https://nodejs.org/en/>

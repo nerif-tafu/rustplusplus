@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Server and Device Discovery</title>
+    <link href="/pair.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="container">
+      <div id="header__container" class="container--narrow-width">
+        <h1 id="title-text__header">Server and Device Discovery</h1>
+        <h2 id="server-status__header">Current status: Waiting for Steam Authentication...</h2>
+      </div>
+      <div id="server-info__container" class="container--narrow-width">
+        <div class="server-info-holder__server-info">
+          <h3 class="server-info-title device--no-response">Server IP Address:</h3>
+          <input class="server-info-textbox" type="text" placeholder="Waiting on server to be paired..." id="textbox__server-ip-holder">
+        </div>
+        <div class="server-info-holder__server-info">
+          <h3 class="server-info-title device--no-response">Server Port:</h3>
+          <input class="server-info-textbox" type="text" placeholder="Waiting on server to be paired..." id="textbox__server-port-holder">
+        </div>
+        <div class="server-info-holder__server-info">
+          <h3 class="server-info-title device--no-response">Steam ID:</h3>
+          <input class="server-info-textbox" type="text" placeholder="Waiting on server to be paired..." id="textbox__steam-id-holder">
+        </div>
+        <div class="server-info-holder__server-info">
+          <h3 class="server-info-title device--no-response">Player Token:</h3>
+          <input class="server-info-textbox" type="text" placeholder="Waiting on server to be paired..." id="textbox__player-token-holder">
+        </div>
+      </div>
+      <div id="device-holder__container" class="container--narrow-width">
+
+      </div>
+      <div id="home-navigation__container" class="container--narrow-width">
+        <a id="h3__home-navigation" href="/"><h3>Back to homepage</h3></a>
+      </div>
+    </div>
+  </body>
+  <script src="/pair.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</html>
+
+<template id="smart-device-template">
+  <div class="device__device-holder">
+    <img class="device-image__device" src="/media/smartswitch.png"></img>
+    <input class="device-id__device" type="text" value="DEVICE ID"></input>
+  </div>
+</template>

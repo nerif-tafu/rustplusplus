@@ -276,7 +276,7 @@ rustplus.on('error', e => {
 rustplus.on('connected', () => {
     currentlyConnected = true;
     io.sockets.emit('server_UpdateServerSettings', {"hostname": db.get('severSettingsHostname').value(), "connectionState": currentlyConnected});
-    rustplus.sendTeamMessage(`Hello! Server initialised at ${new Date()}`);
+    // rustplus.sendTeamMessage(`Hello! Server initialised at ${new Date()}`);
 
     db.get('devices').value().forEach(smartDevice => {
       rustplus.getEntityInfo(smartDevice.deviceID, message => {
@@ -297,7 +297,32 @@ rustplus.on('connected', () => {
     });
 });
 
-rustplus.on('message', (message) => {
+  rustplus.on('message', (message) => {
+    if(message.broadcast && message.broadcast.teamMessage && message.broadcast.teamMessage.message.message.includes('!time')){  
+      rustplus.sendRequest({
+        getTime: {}
+      }, (message) => {
+        const currentTimeHour = parseInt(message.response.time.time);
+        const currentTimeMinute = Math.floor((message.response.time.time % 1) * 60);
+        if (message.response.time.time < message.response.time.sunset && message.response.time.time > message.response.time.sunrise){
+          const hoursUntilSunset = parseInt((message.response.time.sunset - message.response.time.time));
+          const minutesUntilSunset = Math.floor(((message.response.time.sunset - message.response.time.time) % 1) * 60);
+          rustplus.sendTeamMessage(`The current time is ${currentTimeHour}:${addZeroIfBelowTen(currentTimeMinute)} and there is ${hoursUntilSunset} hours and ${minutesUntilSunset} minutes until sunset`);
+        } else {
+          let hoursUntilSunrise;
+          let minutesUntilSunrise;
+          if (message.response.time.time > message.response.time.sunrise){
+            hoursUntilSunrise = parseInt((24 % message.response.time.time) + message.response.time.sunrise);
+            minutesUntilSunrise = Math.floor((((24 % message.response.time.time) + message.response.time.sunrise) % 1) * 60)
+          } else {
+            hoursUntilSunrise = parseInt(message.response.time.sunrise - message.response.time.time);
+            minutesUntilSunrise = Math.floor(((message.response.time.sunrise - message.response.time.time) % 1) * 60);
+          }
+          rustplus.sendTeamMessage(`The current time is ${currentTimeHour}:${addZeroIfBelowTen(currentTimeMinute)} and there is ${hoursUntilSunrise} hours and ${minutesUntilSunrise} minutes until sunrise`);
+        }
+      }); 
+    }
+    
     if(message.broadcast && message.broadcast.entityChanged){
       const entityChanged = message.broadcast.entityChanged;
       db.get('devices')
@@ -316,5 +341,9 @@ rustplus.on('message', (message) => {
         hook.send(`${db.get('devices').find({ deviceID: entityChanged.entityId }).value().deviceName.toUpperCase()} : ${db.get('notificationSettingsDiscordMessage').value()}`);
       }
     }
-});
+  });
+}
+
+function addZeroIfBelowTen(numberToCheck){
+  return (numberToCheck.toString().length < 2) ? "0"+numberToCheck : numberToCheck;
 }
